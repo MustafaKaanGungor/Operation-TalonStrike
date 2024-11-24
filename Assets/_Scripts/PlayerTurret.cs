@@ -11,6 +11,7 @@ public class PlayerTurret : MonoBehaviour
     private float reloadTimer;
     private bool isReloaded;
     [SerializeField] float reloadTime = 3f;
+    [SerializeField] GameObject hitEffect;
 
     private void Awake() {
         playerControls = new PlayerControls();
@@ -36,14 +37,14 @@ public class PlayerTurret : MonoBehaviour
         transform.up = mousePos - new Vector2(transform.position.x, transform.position.y);
     }
 
-    void ReloadController() {//TODO korotin denenicek
+    void ReloadController() {
         if(reloadTimer >= reloadTime) {
             if(!isReloaded) {
                 isReloaded = true;
             }
         }
         else {
-            reloadTimer += Time.deltaTime;//!ÇOK KASTIRIYOR!!!!!!!!
+            reloadTimer += Time.deltaTime;
         }
     }
 
@@ -58,6 +59,10 @@ public class PlayerTurret : MonoBehaviour
             if(hit.collider != null) {
                 trailScript.SetTargetPos(hit.point);
 
+                Instantiate(hitEffect,hit.point, transform.rotation);
+                if(hit.collider.gameObject.TryGetComponent<Health>(out var health)) {
+                    health.Damage(25);
+                }
             }
             else {
                 Vector3 endPos = aimPoint.position + transform.up * maxRange;

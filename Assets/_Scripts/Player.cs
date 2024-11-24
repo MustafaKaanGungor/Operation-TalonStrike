@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float speed;
     [SerializeField] private float turnFactor;
     float rotAngle = 0;
+    [SerializeField] private float driftFactor;
 
     private void Awake() {
         playerControls = new PlayerControls();
@@ -37,6 +38,11 @@ public class Player : MonoBehaviour
 
         Vector2 accelVector = transform.up * accelInput * speed;
         playerRb.AddForce(accelVector, ForceMode2D.Force);
+
+        Vector3 forwardVelocity = transform.up * Vector3.Dot(playerRb.linearVelocity, transform.up);
+        Vector3 rightVelocity = transform.right * Vector3.Dot(playerRb.linearVelocity, transform.right);
+
+        playerRb.linearVelocity = forwardVelocity + rightVelocity * driftFactor;
 
         rotAngle -= steerInput * turnFactor;
         playerRb.MoveRotation(rotAngle);
